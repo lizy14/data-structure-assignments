@@ -285,7 +285,7 @@ LinkList makeComplementOfSortedList(LinkList listA, LinkList listB){
 			break;
 		}
 		if(!pB || pB->data > pA->data){
-			LinkList q = (LinkList)malloc(sizeof(LinkList));
+			LinkList q = (LinkList)malloc(sizeof(LNode));
 			q->data = pA->data;
 			q->next = NULL;
 			if(!head){
