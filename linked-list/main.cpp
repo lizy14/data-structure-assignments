@@ -9,7 +9,7 @@
 #endif
 struct LNode
 {
-	char data;
+	char data;//char or int
 	struct LNode *next;
 };
 typedef LNode* LinkList;
@@ -216,6 +216,7 @@ LinkList makeIntersectionOfTwoSortedLists(LinkList listA, LinkList listB){
 	return head;
 }
 
+
 LinkList makeUnionOfTwoSortedLists(LinkList listA, LinkList listB){
 	if(!listA && !listB)
 		return NULL;
@@ -271,6 +272,38 @@ LinkList makeUnionOfTwoSortedLists(LinkList listA, LinkList listB){
 	return head;
 }
 
+//remove elements in listB from listA: get complement set of B in A.
+LinkList makeComplementOfSortedList(LinkList listA, LinkList listB){
+	if(!listA || !listB)
+		return listA;
+	LinkList head = NULL;
+	LinkList p = NULL;
+	LinkList pA = listA;
+	LinkList pB = listB;
+	while(1){
+		if(!pA){
+			break;
+		}
+		if(!pB || pB->data > pA->data){
+			LinkList q = (LinkList)malloc(sizeof(LinkList));
+			q->data = pA->data;
+			q->next = NULL;
+			if(!head){
+				head = p = q;
+			}else{
+				p->next = q;
+				p = q;
+			}
+			pA = pA->next;
+		}else if(pB->data < pA->data){
+			pB = pB->next;
+			continue;
+		}else if(pB->data == pA->data){
+			pA = pA->next;
+		}
+	}
+	return head;
+}
 
 void problem2_15(){
 	LinkList listA = makeCharListFromStdin();
@@ -294,8 +327,19 @@ void problem2_25(){
 	printIntegerList(intersection);
 	//TODO: release allocated memory
 }
+void problem2_29(){
+	LinkList listA = makeIntegerListFromStdin();
+	LinkList listIntersection = NULL;
+	LinkList listB = makeIntegerListFromStdin();
+	LinkList listC = makeIntegerListFromStdin();
+	listIntersection = makeIntersectionOfTwoSortedLists(listB, listC);
+	LinkList listAnswer = makeComplementOfSortedList(listA, listIntersection);
+	printf("%d\n", getListLength(listAnswer));
+	printIntegerList(listAnswer);
+	//TODO: release allocated memory
+}
 int main(){
-	problem2_25();
+	problem2_29();
 #ifdef LOCAL_DEBUG
 	system("pause");
 #endif
