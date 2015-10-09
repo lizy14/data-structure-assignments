@@ -142,6 +142,8 @@ CirLinkList makeIntegerCircularListFromStdin(){
 #define DATA_TYPE_INT 1
 #define DATA_TYPE_CHAR 2
 void printCircularList(CirLinkList list, int dataType){
+	if(!list)
+		return;
 	CirLinkList p = list;
 	do{
 		printf(dataType==DATA_TYPE_INT?"%d ":"%c ",p->data);
@@ -151,7 +153,9 @@ void printCircularList(CirLinkList list, int dataType){
 //2-32
 #define ORDER_NORMAL 1
 #define ORDER_INVERTED 2
-void printIntegerDuLinkListList(DuLinkList list, int order){
+void printIntegerDuLinkList(DuLinkList list, int order){
+	if(!list)
+		return;
 	DuLinkList p = list;
 	do{
 		printf("%d ",p->data);
@@ -172,13 +176,23 @@ void removePriorInCirLinkList(CirLinkList list){
 	return;
 }
 CirLNode* findElementInCirLinkList(ElemType elem, CirLinkList list){
-	//TODO: do something
+	CirLinkList p = list;
+	do{
+		if(p->data == elem)
+			return p;
+		p = p->next;
+	}while(p != list);
 	return NULL;
 }
 
 //2-32
 DuLNode* findElementInDuLinkList(ElemType elem, DuLinkList list){
-	//TODO: do something
+	DuLinkList p = list;
+	do{
+		if(p->data == elem)
+			return p;
+		p = p->next;
+	}while(p != list);
 	return NULL;
 }
 DuLinkList createDuLinkListFromCirLinkList(CirLinkList list){
@@ -209,7 +223,7 @@ void problem2_32(){
 	DuLinkList duLinkList = createDuLinkListFromCirLinkList(cirLinkList);
 	int elem;
 	scanf("%d", &elem);
-	printIntegerDuLinkListList(findElementInDuLinkList(elem, duLinkList), ORDER_INVERTED);
+	printIntegerDuLinkList(findElementInDuLinkList(elem, duLinkList), ORDER_INVERTED);
 	return;
 }
 void problem2_33(){
@@ -226,7 +240,7 @@ void problem2_33(){
 }
 void test(){
 	CirLinkList list = makeIntegerCircularListFromStdin();
-	printCircularList(list, DATA_TYPE_INT);
+	printCircularList(findElementInCirLinkList(50, list), DATA_TYPE_INT);
 	return;
 }
 int main(){
