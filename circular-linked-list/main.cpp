@@ -215,8 +215,39 @@ DuLNode* findElementInDuLinkList(ElemType elem, DuLinkList list){
 	return NULL;
 }
 DuLinkList createDuLinkListFromCirLinkList(CirLinkList list){
-	//TODO: do something
-	return NULL;
+	if(!list)return NULL;
+	DuLinkList newList = NULL;
+	{
+		DuLinkList q = newList;
+		DuLNode *newNode;
+		CirLNode *p = list;
+		do{
+			newNode = (DuLinkList)malloc(sizeof(DuLNode));
+			if(q==NULL){
+				newList = q = newNode;
+				newNode->data = p->data;
+				newNode->next = NULL;
+			}else{
+				q->next = newNode;
+				q = newNode;
+				q->data = p->data;
+				q->next = NULL;
+			}
+			p = p->next;
+		}while(p!=list);
+		q->next = newList;
+	}
+	//creation of newList finished. now it is a copy of list. then comes the core part
+	
+	DuLinkList p=newList->next;
+	DuLinkList q = newList;
+	do{
+		p->prior = q;
+		q = q->next;
+		p = p->next;
+	}while(p!=newList->next);
+
+	return newList;
 }
 
 //2-33
@@ -266,7 +297,7 @@ void test(){
 	return;
 }
 int main(){
-	problem2_31();
+	problem2_32();
 #ifdef LOCAL_DEBUG
 	system("pause");
 #endif
