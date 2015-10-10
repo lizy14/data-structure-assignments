@@ -1,5 +1,4 @@
 #define LOCAL_DEBUG
-
 /*
 文件名: 
 描　述: 循环链表习题
@@ -17,6 +16,7 @@
 
 
 typedef char ElemType; //char or int. if your integer takes less than 8 bits, both are ok
+//should be a string of chars, for problem 2-33 on OJ.
 
 
 //双向循环链表
@@ -50,11 +50,12 @@ typedef CirLNode* CirLinkList;
 //I/O operations
 
 //input
-//2-33, from link-list, unmodified
-LinkList makeCharListFromStdin(){
+//2-33, from link-list
+LinkList makeCharListFromStdin(int multiplier){
 	LinkList head;
 	int n=0;
 	scanf("\n%d\n", &n);
+	n *= multiplier;
 	if(n==0){
 		return NULL;
 	}else{
@@ -238,7 +239,7 @@ DuLinkList createDuLinkListFromCirLinkList(CirLinkList list){
 		q->next = newList;
 	}
 	//creation of newList finished. now it is a copy of list. then comes the core part
-	
+
 	DuLinkList p=newList->next;
 	DuLinkList q = newList;
 	do{
@@ -251,8 +252,40 @@ DuLinkList createDuLinkListFromCirLinkList(CirLinkList list){
 }
 
 //2-33
-void createMultipleCirLinkListsFromLinkList(LinkList list, CirLinkList listA, CirLinkList list1, CirLinkList list_){
-	//TODO: do something
+/*
+A: alphabetic
+1: numeric
+_: others
+*/
+void createMultipleCirLinkListsFromLinkList(LinkList list, CirLinkList *listA, CirLinkList *list1, CirLinkList *list_){
+	LinkList p = list;
+	CirLinkList *targets[3] = {listA, list1, list_};
+	CirLinkList pA = NULL, pB = NULL, pC = NULL;
+	CirLinkList pointers[3] = {pA, pB, pC};
+	int type = 0;
+	while(p){
+		CirLinkList newNode = (CirLinkList)malloc(sizeof(CirLNode));
+
+		if(pointers[type] == NULL){
+			pointers[type] = *targets[type] = newNode;
+			pointers[type]->data = p->data;
+			pointers[type]->next = NULL;
+		}else{
+			pointers[type]->next = newNode;
+			newNode->data = p->data;
+			newNode->next = NULL;
+			pointers[type] = newNode;
+		}
+
+		p=p->next;
+		type += 1;
+		type %= 3;
+	}
+	int i;
+	for(i=0; i<3; i++){
+		if(pointers[i])
+			pointers[i]->next = *targets[i];
+	}
 	return;
 }
 
@@ -280,9 +313,9 @@ void problem2_32(){
 	return;
 }
 void problem2_33(){
-	LinkList list = makeCharListFromStdin();
+	LinkList list = makeCharListFromStdin(3);
 	CirLinkList listA=NULL, list1=NULL, list_=NULL;
-	createMultipleCirLinkListsFromLinkList(list, listA, list1, list_);
+	createMultipleCirLinkListsFromLinkList(list, &listA, &list1, &list_);
 	printCircularList(listA, DATA_TYPE_CHAR);
 	putchar('\n');
 	printCircularList(list1, DATA_TYPE_CHAR);
@@ -297,7 +330,7 @@ void test(){
 	return;
 }
 int main(){
-	problem2_32();
+	problem2_33();
 #ifdef LOCAL_DEBUG
 	system("pause");
 #endif
