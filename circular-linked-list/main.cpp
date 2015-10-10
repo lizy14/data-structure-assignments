@@ -16,7 +16,7 @@
 #include <stdlib.h>
 
 
-typedef char ElemType; //char or int
+typedef char ElemType; //char or int. if your integer takes less than 8 bits, both are ok
 
 
 //双向循环链表
@@ -146,7 +146,7 @@ void printCircularList(CirLinkList list, int dataType){
 		return;
 	CirLinkList p = list;
 	do{
-		printf(dataType==DATA_TYPE_INT?"%d ":"%c ",p->data);
+		printf(dataType==DATA_TYPE_INT?"%d ":"%c ",(unsigned int)p->data);
 		p = p->next;
 	}while(p!=list);
 }
@@ -171,11 +171,29 @@ void printIntegerDuLinkList(DuLinkList list, int order){
 
 
 //2-31
-void removePriorInCirLinkList(CirLinkList list){
-	//TODO: do something
-	return;
+CirLinkList removePriorInCirLinkList(CirLinkList list, CirLNode **removedNode){
+	if(!list)return NULL;
+	if(list->next == list){
+		free(list);
+		*removedNode = list;
+		return NULL;
+	}
+	CirLinkList p = list;
+	CirLinkList inCaseHeadIsRemoved = list->next;
+	do{
+		p = p->next;
+		if(p->next->next == list){
+			CirLinkList q = p->next;
+			p->next = p->next->next;
+			free(q);
+			*removedNode = q;
+			return q==list?inCaseHeadIsRemoved:list;
+		}
+	}while(p!=list);
+	return list;
 }
 CirLNode* findElementInCirLinkList(ElemType elem, CirLinkList list){
+	if(!list)return NULL;
 	CirLinkList p = list;
 	do{
 		if(p->data == elem)
@@ -187,6 +205,7 @@ CirLNode* findElementInCirLinkList(ElemType elem, CirLinkList list){
 
 //2-32
 DuLNode* findElementInDuLinkList(ElemType elem, DuLinkList list){
+	if(!list)return NULL;
 	DuLinkList p = list;
 	do{
 		if(p->data == elem)
@@ -211,8 +230,11 @@ void problem2_31(){
 	CirLinkList inCaseHeadIsRemoved = list?list->next:NULL;
 	int elem;
 	scanf("%d", &elem);
-	removePriorInCirLinkList(findElementInCirLinkList(elem, list));
-	if(list)
+	CirLinkList listBeforeRemoval = findElementInCirLinkList(elem, list);
+	CirLNode *removedNode;
+	CirLinkList listAfterRemoval = removePriorInCirLinkList(listBeforeRemoval, &removedNode);
+	if(!listAfterRemoval)return;
+	if(removedNode != list)
 		printCircularList(list, DATA_TYPE_INT);
 	else
 		printCircularList(inCaseHeadIsRemoved, DATA_TYPE_INT);
@@ -244,7 +266,7 @@ void test(){
 	return;
 }
 int main(){
-	test();
+	problem2_31();
 #ifdef LOCAL_DEBUG
 	system("pause");
 #endif
