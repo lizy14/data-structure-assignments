@@ -146,7 +146,7 @@ void printCircularList(CirLinkList list, int dataType){
 		return;
 	CirLinkList p = list;
 	do{
-		printf(dataType==DATA_TYPE_INT?"%d ":"%c ",(unsigned int)p->data);
+		printf(dataType==DATA_TYPE_INT?"%d ":"%c ", p->data);
 		p = p->next;
 	}while(p!=list);
 }
