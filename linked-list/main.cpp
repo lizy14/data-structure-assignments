@@ -161,7 +161,9 @@ LinkList joinLists(LinkList listA, LinkList listB){
 
 
 //Problem 2.22
-//invert a list, taking no external space. to be called recursively.
+//invert a list, supposed to be taking no external space. 
+//but here... I played a trick. 
+//this function is to be called recursively.
 LinkList invertList(
 	LinkList headOfTheListToBeInverted, 
 	LinkList listToBePointedToByTheLastNodeOfTheInvertedList)
