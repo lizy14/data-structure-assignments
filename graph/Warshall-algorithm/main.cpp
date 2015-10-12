@@ -72,8 +72,9 @@ int test(std::istream& s){
     graph.read(s);
     
     int _, _1, _2, __;
+	s >> _;
     for(int i=0; i<_; i++){
-        s >> _1, _2;
+        s >> _1 >> _2;
         __ = graph.lengthOfShortestPath(_1-1, _2-1);
         if(__ == Graph::NO_PATH)
             std::cout << "NO PATH" << std::endl;
