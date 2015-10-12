@@ -13,8 +13,6 @@
 #include <fstream>
 #include <algorithm>
 
-#include <stdlib.h>
-
 
 class Graph{
     int **matrixAdjacency; //邻接矩阵
@@ -51,8 +49,8 @@ void Graph::warshall(){
 	//here we go
 	int a, b;
 	for(int k=0; k<nVertexes; k++){
-		for(int j=0; j<nVertexes; j++){
-			for(int i=0; i<nVertexes; i++){
+		for(int i=0; i<nVertexes; i++){
+			for(int j=0; j<nVertexes; j++){
 					a = matrixD[i][j];
 					b = matrixD[i][k]+matrixD[k][j];
 					matrixD[i][j] = std::min(a, b);
@@ -126,6 +124,5 @@ int main(){
     
     //for local debug
     std::ifstream file("input.txt");
-    test(file);
-    return system("pause");
+    return test(file);
 }
