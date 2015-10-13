@@ -16,7 +16,6 @@
 #include <iostream>
 #include <string>
 
-
 bool validateBrackets(const std::string str, const std::string brackets = "()[]{}<>"){
 	std::stack<char> stack; //holds 
 	for(char chr: str){
@@ -78,34 +77,6 @@ bool isSymmetrical(
 			else
 				return false;
 		}
-	}
-}
-
-//checks if a string is a palindrome
-bool isPalindrome(
-	std::istream& stream,
-	const char endOfInput = EOF)
-{
-	std::stack<char> stack;
-	std::queue<char> queue;
-	char chr;
-	while(1){
-		stream >> chr;
-		if(chr == endOfInput)
-			break;
-		stack.push(chr);
-		queue.push(chr);
-	}
-	while(1){
-		if(stack.empty() && queue.empty())
-			return true;
-		if(stack.empty() || queue.empty())
-			return false;
-		if(stack.top() != queue.front())
-			return false;
-		
-		stack.pop();
-		queue.pop();
 	}
 }
 
@@ -293,16 +264,7 @@ void problem3_22(){
 	}
 #endif
 }
-void problem3_28(){
 
-}
-void problem3_31(){
-	bool answer = isPalindrome(std::cin, '@');
-	printBool(answer);
-}
-void problem3_32(){
-
-}
 int main(){
 	problem3_22();
 #ifdef LOCAL_DEBUG
