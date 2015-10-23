@@ -138,7 +138,7 @@ public:
 
 };
 template <class Q>
-void dumpQueue(Q q){
+void dumpQueue(Q& q){
 	while(!q.empty())
 		std::cout << q.dequeue() << ' ';
 }
@@ -216,8 +216,8 @@ void test(){
 void problem3_32(){
 	
 	int k, max;
-	//std::cin >> k >> max
-	k=3, max=242;
+	std::cin >> k >> max;
+	
 	CyclicQueue<int> queue(k);
 
 	int sum = 1;
