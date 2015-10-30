@@ -40,28 +40,26 @@ BiTree makeTree(const string& str){
 
 	int left = str.find('(');
 	int right = str.rfind(')');
-	int comma = str.find(',');
-	if(comma != str.rfind(',')){
-		//there are more than one ','.
-		//we have to decide which one to choose.
-		int stack=0;
-		for(int i=left+1; i<right; i++){
-			switch(str[i]){
-			case '(':
-				stack ++;
-				break;
-			case ')':
-				stack --;
-				break;
-			case ',':
-				if(stack == 0){
-					comma = i;
-					goto outside_break;
-				}
-				break;
-			default:
-				break;
+	
+	int comma = string::npos;
+	//we have to decide which one to choose.
+	int stack=0;
+	for(int i=left+1; i<right; i++){
+		switch(str[i]){
+		case '(':
+			stack ++;
+			break;
+		case ')':
+			stack --;
+			break;
+		case ',':
+			if(stack == 0){
+				comma = i;
+				goto outside_break;
 			}
+			break;
+		default:
+			break;
 		}
 	}
 	outside_break:
@@ -81,6 +79,7 @@ BiTree makeTree(const string& str){
 
 	return tree;
 }
+
 void destroyTree(BiTree tree){
 	if(tree == nullptr)
 		return;
@@ -94,7 +93,7 @@ void printTreeByLevels(BiTree tree){
 	
 	if(tree==nullptr)
 		return ;
-    queue<BiTNode *> q1;
+	queue<BiTNode *> q1;
 	
 	BiTNode *p = tree;
 	q1.push(tree);

@@ -39,28 +39,26 @@ BiTree makeTree(const string& str){
 
 	int left = str.find('(');
 	int right = str.rfind(')');
-	int comma = str.find(',');
-	if(comma != str.rfind(',')){
-		//there are more than one ','.
-		//we have to decide which one to choose.
-		int stack=0;
-		for(int i=left+1; i<right; i++){
-			switch(str[i]){
-			case '(':
-				stack ++;
-				break;
-			case ')':
-				stack --;
-				break;
-			case ',':
-				if(stack == 0){
-					comma = i;
-					goto outside_break;
-				}
-				break;
-			default:
-				break;
+	
+	int comma = string::npos;
+	//we have to decide which one to choose.
+	int stack=0;
+	for(int i=left+1; i<right; i++){
+		switch(str[i]){
+		case '(':
+			stack ++;
+			break;
+		case ')':
+			stack --;
+			break;
+		case ',':
+			if(stack == 0){
+				comma = i;
+				goto outside_break;
 			}
+			break;
+		default:
+			break;
 		}
 	}
 	outside_break:
@@ -121,8 +119,8 @@ int main(int argc, char *argv[]){
 	string str;
 	char chr; 
 #ifdef LOCAL_DEBUG
-	str = "A(B)";
-	chr = 'A';
+	str = "A(B(C,D))";
+	chr = 'E';
 #else
 	getline(cin, str);
 	cin >> chr;

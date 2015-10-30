@@ -23,13 +23,11 @@ void printBool(bool b){
 //checks if u is a descendant of v
 //to be called recursively
 bool isDescendant(int u, int v){
+	if(v==0)
+		return false;
 	if(u==v)
 		return true;
-	bool b = false;
-	if(L[v]!=0)
-		b = b || isDescendant(u, L[v]);
-	if(R[v]!=0)
-		b = b || isDescendant(u, R[v]);
+	bool b = isDescendant(u, L[v]) || isDescendant(u, R[v]);
 	return b;
 }
 int* getArray(int n){
