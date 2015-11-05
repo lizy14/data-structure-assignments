@@ -96,6 +96,8 @@ int main(int argc, char *argv[]){
 	while(!cin.eof()){
 		char _;
 		cin >> _;
+		if(_ == '$')
+			break;
 		if(cin.good())
 			sqBiTree.push_back(_);
 		else
