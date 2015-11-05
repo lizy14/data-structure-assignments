@@ -1,7 +1,7 @@
 #define LOCAL_DEBUG
 /*
 文件名: 
-描　述: 二叉树习题 6.50 以三元组构建二叉树
+描　述: 二叉树习题 6.50 以三元组构建二叉链表
 
 作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
 创建于: 2015-11-5
@@ -16,7 +16,6 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
 using namespace std;
 
 typedef char TElemType; 
