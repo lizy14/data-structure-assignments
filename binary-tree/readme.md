@@ -93,3 +93,110 @@
 注意事项:
 
 若二叉树为空，输出空。
+
+
+# 习题6.51
+时间限制:1s
+
+内存限制:128M
+
+编写一个算法，输出以二叉树表示的算术表达式，若该表达式中需要含有括号，则在输出时应添上表示。
+
+建议使用如下数据结构
+
+    typedef char TElemType; 
+
+    typedef struct BiTNode{
+        TElemType data;
+        struct BiTNode *lchild, *rchild;
+    //lchild,rchild分别为节点的左孩子，右孩子指针
+    }BiTNode, *BiTree, *BiTLink;
+    
+输入格式共一行，为该二叉树的广义表形式。
+
+输出格式共一行，为所求算术表达式。
+
+输入格式
+
+    +(B,C)
+    
+输出格式
+
+    B+C
+    
+注意事项:
+
+若树为空，则输入第一行为结束标识，输出应为空。
+
+# 习题6.50
+时间限制:1s
+
+内存限制:128M
+
+假设以三元组(F,C,L/R)的形式输入一棵二叉树的诸边（其中F表示双亲结点的标识，C标识孩子结点的标识，L/R标识C为F的左孩子或右孩子），且在输入的三元组序列中，C是按层次顺序出现的。设结点的标识是字符类型。F='^'时C为根节点标识，若C也为'^'，则标识输入结束。试编写算法，由输入的三元组序列建立二叉树的二叉链表。
+
+建议使用如下数据结构
+
+    typedef char TElemType; 
+
+    typedef struct BiTNode{
+        TElemType data;
+        struct BiTNode *lchild, *rchild;
+    //lchild,rchild分别为节点的左孩子，右孩子指针
+    }BiTNode, *BiTree, *BiTLink;
+
+输入格式为若干行，每行分别为三个字符，描述如题。
+
+输出格式共一行，为该二叉树的广义表形式。
+
+输入格式
+
+    ^AL
+    ABL
+    ACR
+    ^^L
+
+输出格式
+
+    A(B,C)
+    
+注意事项:
+
+若树为空，则输入第一行为结束标识，输出应为空。
+
+# 习题6.54
+时间限制:1s
+
+内存限制:128M
+
+假设以顺序表sa表示一棵完全二叉树。从根到叶结点按层次从1开始编号，同一层次从左到右编号，数据存储在对应的数组元素中。试编写算法由此顺序存储结构建立该二叉树的二叉链表。
+
+建议使用如下数据结构
+
+    typedef int TElemType;
+
+    typedef struct{
+    　　int size;
+    　　TElemType elem[MAX_TREE_SIZE + 1];　　// elem[0]不用
+    }SqBiTree;
+
+    typedef struct BiTNode{
+    　　TElemType data;
+    　　struct BiTNode *lchild, *rchild;
+    }BiTNode, *BiTree, *BiTLink;
+
+输入格式共一行，顺序列出从根节点开始的各个节点元素，空格隔开，以'$'结束。
+
+输出格式共一行，为二叉树结构的广义表达。
+
+输入格式
+
+    A B C D 
+    
+输出格式
+    
+    A(B(D),C)
+    
+注意事项:
+
+若树为空，则输入第一行为结束标识，输出应为空。
