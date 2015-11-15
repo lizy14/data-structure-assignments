@@ -15,34 +15,127 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <set>
+#include <algorithm>
+#include <limits>
+#include <stack>
+#include <iterator>
 
 class PTGraph{
     typedef int nodeID;
     typedef int time;
-    typedef struct{
-        std::vector<nodeID> dependencies;//先序工序
+    struct procedure{
+        // i -> j: j depends upon i, i is depended by j.
+        std::set<nodeID> dependUpon;//依赖的工序，PT图中的前驱
+        std::set<nodeID> dependedBy;//依赖于本工序的工序，PT图中的后继
+        bool dependsUpon(nodeID i){
+            return dependUpon.find(i)!=dependUpon.end();
+        }
+        bool isDependedBy(nodeID i){
+            return dependedBy.find(i)!=dependedBy.end();
+        }
+
         time timeCost;//本工序耗时
-    } procedure;
+        time pi, tau, t;//本工序的最早启动时间、最晚启动时间、允许延误时间
+        procedure():pi(0),tau(std::numeric_limits<int>::max()){}
+    };
 
     std::vector<procedure> procedures;
     int nProcedures;
-    std::vector<nodeID> nodeIdTranslation; 
-   
-public:
-    PTGraph()
-        {}
+    std::vector<nodeID> map; 
     
-    void findCriticalPath(){
+    typedef std::vector<nodeID> path;
+    typedef std::vector<path> paths;
+    path Q;
+public:
+    
+    /*
+    topological sort
+    makes sure that if procedure i is depended by j (i -> j),
+    map[i] < map[j]
+    */
+    void sortProcedures(){
+        map.resize(0);
+        std::set<nodeID> deletedNodes;
 
+        //find a node depend upon no one
+        while(deletedNodes.size() <= nProcedures){
+            for(int i=0; i <= nProcedures; i++){
+                if(std::find(deletedNodes.begin(),deletedNodes.end(),i)!=deletedNodes.end())
+                    continue;
+                std::vector<nodeID> dependUponCurrently;
+                //for(auto j: procedures[i].dependUpon){
+                for(std::set<nodeID>::iterator it = procedures[i].dependUpon.begin(); 
+                    it != procedures[i].dependUpon.end();
+                    it++){
+                    nodeID j = *it;
+                    if(deletedNodes.find(j)==deletedNodes.end()){
+                        dependUponCurrently.push_back(j);
+                    }
+                }
+                
+                if(dependUponCurrently.empty()){
+                    //found it
+                    deletedNodes.insert(i);
+                    map.push_back(i);
+                    break;
+                }
+            }
+        }
+    }
+    void exec(){
+        sortProcedures();
+        //calculate pi
+        Q.resize(nProcedures+1,0);
+        procedures[map[0]].pi = 0;
+        for(int j_=1; j_<=nProcedures; j_++){
+            nodeID j = map[j_];
+            //for(auto i: procedures[j].dependUpon){
+            for(std::set<nodeID>::iterator it = procedures[j].dependUpon.begin(); 
+                it != procedures[j].dependUpon.end();
+                it++){
+                nodeID i = *it;
+                // i -> j
+                time possibleNewPi = procedures[i].pi + procedures[i].timeCost;
+                if(possibleNewPi > procedures[j].pi){
+                    procedures[j].pi = possibleNewPi;
+                    if(Q[j] && Q[j]!=i)
+                        ;//TODO
+                    Q[j]=i;
+                }
+            }
+        }
+
+        //calculate tau
+        procedures[map[nProcedures]].tau = procedures[map[nProcedures]].pi;
+        for(int j_=nProcedures-1; j_>=0; j_--){
+            nodeID j = map[j_];
+            //for(auto i: procedures[j].dependedBy){
+            for(std::set<nodeID>::iterator it = procedures[j].dependedBy.begin(); 
+                it != procedures[j].dependedBy.end();
+                it++){
+                nodeID i = *it;
+                // j -> i
+                time possibleNewTau = procedures[i].tau - procedures[j].timeCost;
+                if(possibleNewTau < procedures[j].tau){
+                    procedures[j].tau = possibleNewTau;
+                }
+            }
+        }
+
+        //calculate t
+        for(int i=0; i<=nProcedures; i++){
+            procedures[i].t = procedures[i].tau - procedures[i].pi;
+        }
     }
     void read(std::istream& s){
         s >> nProcedures;
 
-        procedures.resize(nProcedures);
+        //there is a virtual ending point
+        procedures.resize(nProcedures+1);
         
         std::string line;
         std::getline(s, line);
-
         for(int i=0; i<nProcedures; i++){
             std::getline(s, line);
             std::stringstream stream(line);
@@ -55,7 +148,8 @@ public:
                 stream >> dependency;
                 if(stream.fail())
                     break; 
-                procedures[id].dependencies.push_back(dependency);
+                procedures[id].dependUpon.insert(dependency);
+                procedures[dependency].dependedBy.insert(id);
                 char comma;
                 stream >> comma;
                 if(stream.fail())
@@ -64,12 +158,56 @@ public:
                     throw "invalid syntax";
             }
         }
+        
+        //update the virtual procedure
+        for(int i=0; i<nProcedures; i++){
+            if(procedures[i].dependedBy.empty()){
+                procedures[i].dependedBy.insert(nProcedures);
+                procedures[nProcedures].dependUpon.insert(i);
+            }
+        }
+    }
+
+    std::vector<nodeID> getPath(){
+        std::vector<nodeID> vector;
+
+        std::stack<nodeID> stack;
+
+        nodeID p = map[nProcedures];
+        while(Q[p]!=map[0]){
+            stack.push(Q[p]);
+            p = Q[p];
+        }
+        if(procedures[map[0]].t==0)
+            vector.push_back(map[0]);
+        while(!stack.empty()){
+            vector.push_back(stack.top());
+            stack.pop();
+        }
+        return vector;
+    }
+    void write(std::ostream& s){
+
+        s << procedures[nProcedures].pi << '\n';
+        //construct criticalPaths
+        path criticalPath = getPath();
+        //TODO: multiple criticalPaths
+
+        for(int i=0; i<criticalPath.size(); i++)
+            s << criticalPath[i] << '-';
+        s << "end\n";
+
+        //print t
+        for(int i=0; i<nProcedures; i++)
+            s << procedures[i].t << '\n';
     }
 };
 
 int test(std::istream& s){
     PTGraph graph;
     graph.read(s);
+    graph.exec();
+    graph.write(std::cout);
     return 0;
 }
 int main(){
