@@ -46,7 +46,9 @@ class PTGraph{
     
     typedef std::vector<nodeID> path;
     typedef std::vector<path> paths;
-    path Q;
+    
+    std::vector<std::vector<nodeID> > Q;
+
 public:
     
     /*
@@ -86,7 +88,7 @@ public:
     void exec(){
         sortProcedures();
         //calculate pi
-        Q.resize(nProcedures+1,0);
+        Q.resize(nProcedures+1,std::vector<nodeID>(1));
         procedures[map[0]].pi = 0;
         for(int j_=1; j_<=nProcedures; j_++){
             nodeID j = map[j_];
@@ -99,9 +101,11 @@ public:
                 time possibleNewPi = procedures[i].pi + procedures[i].timeCost;
                 if(possibleNewPi > procedures[j].pi){
                     procedures[j].pi = possibleNewPi;
-                    if(Q[j] && Q[j]!=i)
-                        ;//TODO
-                    Q[j]=i;
+                    Q[j].resize(1);
+                    Q[j][0]=i;
+                }else if(possibleNewPi == procedures[j].pi){
+                    procedures[j].pi = possibleNewPi;
+                    Q[j].push_back(i);
                 }
             }
         }
@@ -168,34 +172,62 @@ public:
         }
     }
 
-    std::vector<nodeID> getPath(){
-        std::vector<nodeID> vector;
+    paths getPath(){
+        paths ret;
+        
+        std::vector<int> Qit; //which one in Q[p][] to visit
+        Qit.resize(nProcedures+1, 0);
+        bool flag = false; //whether there's another path to find
 
-        std::stack<nodeID> stack;
-
-        nodeID p = map[nProcedures];
-        while(Q[p]!=map[0]){
-            stack.push(Q[p]);
-            p = Q[p];
-        }
-        if(procedures[map[0]].t==0)
-            vector.push_back(map[0]);
-        while(!stack.empty()){
-            vector.push_back(stack.top());
-            stack.pop();
-        }
-        return vector;
+        do{
+            path vector;
+            std::stack<nodeID> stack;
+            nodeID p = map[nProcedures]; //currently visiting node
+            flag = false;
+            
+            while(true){
+                int i = Qit[p];
+                if(Q[p][i]==map[0])
+                    break;
+                stack.push(Q[p][i]);
+                if(Qit[p]+1 < Q[p].size() ){
+                    flag = true;
+                    Qit[p]++;
+                }
+                p = Q[p][i];
+            }
+            if(procedures[map[0]].t==0)
+                vector.push_back(map[0]);
+            while(!stack.empty()){
+                vector.push_back(stack.top());
+                stack.pop();
+            }
+        
+            ret.push_back(vector);
+        }while(flag);
+        return ret;
     }
     void write(std::ostream& s){
 
         s << procedures[nProcedures].pi << '\n';
         //construct criticalPaths
-        path criticalPath = getPath();
-        //TODO: multiple criticalPaths
+        paths criticalPath = getPath();
+        std::vector<std::string> criticalPathStrings(criticalPath.size());
 
-        for(int i=0; i<criticalPath.size(); i++)
-            s << criticalPath[i] << '-';
-        s << "end\n";
+        //translate into output format 
+        for(int j=0; j<criticalPath.size(); j++){
+            std::stringstream ss;
+            for(int i=0; i<criticalPath[j].size(); i++)
+                ss << criticalPath[j][i] << '-';
+            ss << "end\n";
+            criticalPathStrings[j] = ss.str();
+        }
+        //sort them
+        std::sort(criticalPathStrings.begin(), criticalPathStrings.end());
+        //and print them
+        for(int j=0; j<criticalPath.size(); j++){
+            s << criticalPathStrings[j];
+        }
 
         //print t
         for(int i=0; i<nProcedures; i++)
