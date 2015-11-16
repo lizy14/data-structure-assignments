@@ -10,44 +10,46 @@
 环　境: Visual Studio 2012 (MSVC++ 11.0)
 */
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <set>
 #include <algorithm>
-#include <limits>
-#include <stack>
+#include <fstream>
+#include <iostream>
 #include <iterator>
+#include <limits>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <vector>
 
 class PTGraph{
     typedef int nodeID;
     typedef int time;
+    typedef std::vector<nodeID> path;
+    typedef std::vector<path> paths;
+
     struct procedure{
         // i -> j: j depends upon i, i is depended by j.
+
         std::set<nodeID> dependUpon;//依赖的工序，PT图中的前驱
         std::set<nodeID> dependedBy;//依赖于本工序的工序，PT图中的后继
-        bool dependsUpon(nodeID i){
-            return dependUpon.find(i)!=dependUpon.end();
-        }
-        bool isDependedBy(nodeID i){
-            return dependedBy.find(i)!=dependedBy.end();
-        }
-
-        time timeCost;//本工序耗时
+        time timeCost;              //本工序耗时
+        
         time pi, tau, t;//本工序的最早启动时间、最晚启动时间、允许延误时间
+
         procedure():pi(0),tau(std::numeric_limits<int>::max()){}
+        bool find_(std::set<int>& s,int i){return s.find(i)!=s.end();}
+        bool dependsUpon(nodeID i){return find_(dependUpon, i);}
+        bool isDependedBy(nodeID i){return find_(dependedBy, i);}
     };
 
     std::vector<procedure> procedures;
     int nProcedures;
+
+    //maps from a node's _original ID_ to its _ID after topological sort_
     std::vector<nodeID> map; 
     
-    typedef std::vector<nodeID> path;
-    typedef std::vector<path> paths;
-    
-    std::vector<std::vector<nodeID> > Q;
+    //stores a node's dependency(s) in critical path(s)
+    std::vector<std::vector<nodeID> > Q; 
 
 public:
     
@@ -65,11 +67,10 @@ public:
             for(int i=0; i <= nProcedures; i++){
                 if(std::find(deletedNodes.begin(),deletedNodes.end(),i)!=deletedNodes.end())
                     continue;
+
                 std::vector<nodeID> dependUponCurrently;
-                //for(auto j: procedures[i].dependUpon){
                 for(std::set<nodeID>::iterator it = procedures[i].dependUpon.begin(); 
-                    it != procedures[i].dependUpon.end();
-                    it++){
+                    it != procedures[i].dependUpon.end(); it++){
                     nodeID j = *it;
                     if(deletedNodes.find(j)==deletedNodes.end()){
                         dependUponCurrently.push_back(j);
@@ -77,9 +78,9 @@ public:
                 }
                 
                 if(dependUponCurrently.empty()){
-                    //found it
-                    deletedNodes.insert(i);
-                    map.push_back(i);
+                    //found it.
+                    deletedNodes.insert(i);// delete it from the graph 
+                    map.push_back(i);      // and send it to the sequence of sorted nodes
                     break;
                 }
             }
@@ -88,14 +89,12 @@ public:
     void exec(){
         sortProcedures();
         //calculate pi
-        Q.resize(nProcedures+1,std::vector<nodeID>(1));
+        Q.resize(nProcedures+1,std::vector<nodeID>(1,-1));
         procedures[map[0]].pi = 0;
         for(int j_=1; j_<=nProcedures; j_++){
             nodeID j = map[j_];
-            //for(auto i: procedures[j].dependUpon){
             for(std::set<nodeID>::iterator it = procedures[j].dependUpon.begin(); 
-                it != procedures[j].dependUpon.end();
-                it++){
+                it != procedures[j].dependUpon.end(); it++){
                 nodeID i = *it;
                 // i -> j
                 time possibleNewPi = procedures[i].pi + procedures[i].timeCost;
@@ -114,10 +113,8 @@ public:
         procedures[map[nProcedures]].tau = procedures[map[nProcedures]].pi;
         for(int j_=nProcedures-1; j_>=0; j_--){
             nodeID j = map[j_];
-            //for(auto i: procedures[j].dependedBy){
             for(std::set<nodeID>::iterator it = procedures[j].dependedBy.begin(); 
-                it != procedures[j].dependedBy.end();
-                it++){
+                it != procedures[j].dependedBy.end(); it++){
                 nodeID i = *it;
                 // j -> i
                 time possibleNewTau = procedures[i].tau - procedures[j].timeCost;
@@ -135,7 +132,7 @@ public:
     void read(std::istream& s){
         s >> nProcedures;
 
-        //there is a virtual ending point
+        //there is a virtual procedure: ending point
         procedures.resize(nProcedures+1);
         
         std::string line;
@@ -163,7 +160,7 @@ public:
             }
         }
         
-        //update the virtual procedure
+        //add edges to the virtual procedure
         for(int i=0; i<nProcedures; i++){
             if(procedures[i].dependedBy.empty()){
                 procedures[i].dependedBy.insert(nProcedures);
@@ -187,7 +184,7 @@ public:
             
             while(true){
                 int i = Qit[p];
-                if(Q[p][i]==map[0])
+                if(Q[p][i]==-1)
                     break;
                 stack.push(Q[p][i]);
                 if(Qit[p]+1 < Q[p].size() ){
@@ -196,8 +193,7 @@ public:
                 }
                 p = Q[p][i];
             }
-            if(procedures[map[0]].t==0)
-                vector.push_back(map[0]);
+            
             while(!stack.empty()){
                 vector.push_back(stack.top());
                 stack.pop();
