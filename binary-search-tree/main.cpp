@@ -21,13 +21,14 @@ using namespace std;
 class BinarySearchTree;
 
 class BinarySearchTree{
-protected:
+public:
     typedef int TElemType;
     typedef struct BiTNode{
         TElemType data;
         struct BiTNode *lchild, *rchild;
     }BiTNode, *BiTree, *BiTLink;
-
+    typedef vector<BinarySearchTree> Trees;
+private:
     BiTree root;
 public:
     BinarySearchTree():root(nullptr){}
@@ -45,14 +46,25 @@ public:
     void insert(TElemType elem){
         root = insertInto(root, elem);
     }
-    vector<BinarySearchTree>split(TElemType d){
-        vector<BinarySearchTree> v(2);
+    Trees split(TElemType d){
+        Trees v(2);
+        tour(root, d, v);
         return v;
     }
     void makeSureEverythingIsLessThan(TElemType d){
         root = makeSureEverythingIsLessThanIn(root, d);
     }
 protected:
+    void tour(BiTLink t, TElemType d, Trees& v){
+        if(t == nullptr)
+            return;
+        if(t->data <= d)
+            v[0].insert(t->data);
+        else
+            v[1].insert(t->data);
+        tour(t->lchild, d, v);
+        tour(t->rchild, d, v);
+    }
     BiTree insertInto(BiTree t, TElemType e){
         if(t == nullptr){
             t = new BiTNode();
@@ -190,7 +202,7 @@ int main(){
     string str;
     int elem;
 #ifdef _DEBUG
-    str = "2(1,3(-,4))";
+    str = "5(2,8)";
     elem = 3;
 #else
     getline(cin, str);
@@ -200,9 +212,11 @@ int main(){
     BinarySearchTree tree(str);
 
     //tree.insert(elem);
-    tree.makeSureEverythingIsLessThan(elem);
+    //tree.makeSureEverythingIsLessThan(elem);
+    BinarySearchTree::Trees trees = tree.split(elem);
 
-    cout << (string)tree;
+    //cout << (string)tree;
+    cout << (string)trees[0] << endl << (string)trees[1] << endl;
 
 #ifdef _DEBUG
     system("pause");
