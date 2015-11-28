@@ -1,6 +1,6 @@
 /*
 文件名: 
-描　述: 二叉搜索树习题 9.36：插入
+描　述: 二叉搜索树习题
 
 作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
 创建于: 2015-11-28
@@ -15,7 +15,7 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
-
+#include <vector>
 using namespace std;
 
 class BinarySearchTree;
@@ -30,6 +30,7 @@ protected:
 
     BiTree root;
 public:
+    BinarySearchTree():root(nullptr){}
     BinarySearchTree(string str){
         root = makeTree(str);
     }
@@ -37,11 +38,19 @@ public:
         destroyTree(root);
     }
     operator string(){
-        string str = printTree(root);
-        return str;
+        if(root == nullptr)
+            return "";
+        return printTree(root);
     }
     void insert(TElemType elem){
         root = insertInto(root, elem);
+    }
+    vector<BinarySearchTree>split(TElemType d){
+        vector<BinarySearchTree> v(2);
+        return v;
+    }
+    void makeSureEverythingIsLessThan(TElemType d){
+        root = makeSureEverythingIsLessThanIn(root, d);
     }
 protected:
     BiTree insertInto(BiTree t, TElemType e){
@@ -60,6 +69,24 @@ protected:
             return t;
         }
         return t;
+    }
+    BiTree makeSureEverythingIsLessThanIn(BiTree t, TElemType d){
+        if(t == nullptr){
+            return t;
+        }
+        if(d < t->data){
+            destroyTree(t);
+            return nullptr;
+        }else if(d > t->data){
+            t->rchild = makeSureEverythingIsLessThanIn(t->rchild, d);
+            return t;
+        }else{//d == t.data
+            BiTree newNode = t->lchild;
+            destroyTree(t->rchild);
+            delete t;
+            return newNode;
+
+        }
     }
     BiTree makeTree(const string& str){
 	    int len = str.length();
@@ -163,7 +190,7 @@ int main(){
     string str;
     int elem;
 #ifdef _DEBUG
-    str = "5(2,8)";
+    str = "2(1,3(-,4))";
     elem = 3;
 #else
     getline(cin, str);
@@ -172,7 +199,8 @@ int main(){
 
     BinarySearchTree tree(str);
 
-    tree.insert(elem);
+    //tree.insert(elem);
+    tree.makeSureEverythingIsLessThan(elem);
 
     cout << (string)tree;
 
