@@ -34,15 +34,15 @@ ostream& operator<<(ostream& s, vector<T> v){
     return s << endl;
 }
 
+
+struct Range {
+    int a, b;
+    Range(int a_=0, int b_=0):a(a_),b(b_){}
+};
+    
 template<class T>
 void quickSort(vector<T>& arr) {
     
-    
-    struct Range {
-        int a, b;
-        Range(int a_=0, int b_=0):a(a_),b(b_){}
-    };
-
     stack<Range> s; 
 
     int len = arr.size();
