@@ -1,12 +1,12 @@
-# Ï°Ìâ10.34
+# ä¹ é¢˜10.34
 
-Ê±¼äÏÞÖÆ:1s
+æ—¶é—´é™åˆ¶:1s
 
-ÄÚ´æÏÞÖÆ:128M
+å†…å­˜é™åˆ¶:128M
 
-±àÐ´¶ÑÅÅÐòÊ±£¬ÊµÏÖ²åÈëÐÂÊý¾Ý·½·¨¡£ÒÑÓÐÁËp¸öÔªËØµÄ¶Ñ£¬ÄÜ¹»ÒÔO(log n)Ëã·¨¸´ÔÓ¶ÈÌí¼ÓµÚp+1¸öÔªËØ¡£
+ç¼–å†™å †æŽ’åºæ—¶ï¼Œå®žçŽ°æ’å…¥æ–°æ•°æ®æ–¹æ³•ã€‚å·²æœ‰äº†pä¸ªå…ƒç´ çš„å †ï¼Œèƒ½å¤Ÿä»¥O(log n)ç®—æ³•å¤æ‚åº¦æ·»åŠ ç¬¬p+1ä¸ªå…ƒç´ ã€‚
 
-    #define MAXSIZE 200 //×î´ó³¤¶È
+    #define MAXSIZE 200 //æœ€å¤§é•¿åº¦
 
     typedef int KeyType;
     typedef int InfoType;
@@ -17,20 +17,20 @@
     }RcdType;
 
     typedef struct {
-        RcdType r[MAXSIZE + 1]; //r[0]ÏÐÖÃ»òÕßÓÃ×÷ÉÚ±øµ¥Ôª
+        RcdType r[MAXSIZE + 1]; //r[0]é—²ç½®æˆ–è€…ç”¨ä½œå“¨å…µå•å…ƒ
         int length;
     }SqList;
     
-ÊäÈë¸ñÊ½µÚÒ»ÐÐÎªÒ»¸ö´ýÅÅÐòÊý×Ö×Ü¸öÊýn¡£µÚ¶þÐÐ¹²ÓÐËæ»ún¸öÊý×Ö¡£µÚÈýÐÐÎªÒªÔö¼ÓµÄÊý×Ök¡£
+è¾“å…¥æ ¼å¼ç¬¬ä¸€è¡Œä¸ºä¸€ä¸ªå¾…æŽ’åºæ•°å­—æ€»ä¸ªæ•°nã€‚ç¬¬äºŒè¡Œå…±æœ‰éšæœºnä¸ªæ•°å­—ã€‚ç¬¬ä¸‰è¡Œä¸ºè¦å¢žåŠ çš„æ•°å­—kã€‚
 
-Êä³ö¹²Ò»ÐÐ£¬Êä³öÅÅÐòºóµÄ½á¹û¡£
+è¾“å‡ºå…±ä¸€è¡Œï¼Œè¾“å‡ºæŽ’åºåŽçš„ç»“æžœã€‚
 
-ÊäÈë¸ñÊ½
+è¾“å…¥æ ¼å¼
 
     2
     69 50
     38
 
-Êä³ö¸ñÊ½
+è¾“å‡ºæ ¼å¼
 
     38 50 69
