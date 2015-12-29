@@ -12,6 +12,6 @@
     - 严蔚敏 吴伟民 米宁《数据结构题集（C语言版）》（清华大学出版社）
     - 戴一奇 胡冠章 陈卫《图论与代数结构》（清华大学出版社）
 
-_使用时务必保留以上信息_。
-
-_使用时务必注明作者和出处_。
+<a href="http://www.wtfpl.net/"><img
+       src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
+       width="80" height="15" alt="WTFPL" /></a>
